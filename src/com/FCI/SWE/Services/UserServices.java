@@ -34,11 +34,15 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Query;
 
 /**
- * This class contains REST services, also contains action function for web
+ * This class contains REST services, also contains action function for Android
  * application
  * 
- * @author Mohamed Samir
- * @version 1.0
+ * @author Noha Magdy
+ * @author Heba Shamardy
+ * @author Noha Hegazy
+ * @author Neama Foaud
+ * @author Nehal Khaled
+ * @version 1.1
  * @since 2014-02-12
  *
  */
@@ -82,6 +86,20 @@ public class UserServices {
 		object.put("Status", "OK");
 		return object.toString();
 	}
+	
+	
+	/**
+	 * Accept Friend Rest service, this service will be called to accept 
+	 * a friend request that was sent to the active user.
+	 * This function will store the two friends' email in 
+	 * data store.
+	 * 
+	 * @param uemail
+	 *            provided current user email
+	 * @param femail
+	 *            provided the accepted friend email
+	 * @return Status json
+	 */
 	@POST
 	@Path("/AddFriendService")
 	public String addFriend(@FormParam("uemail") String uemail,
@@ -96,6 +114,20 @@ public class UserServices {
 		return object.toString();
 	}
 	
+	
+	/**
+	 * Deny friend request Rest service, this service will be called to deny
+	 * a request that was sent to current user. 
+	 * This function will delete the request that is denied from
+	 * data store
+	 * 
+	 * @param uemail
+	 *            provided current user email
+	 * @param femail
+	 *            provided the friend email 
+	 *            
+	 * @return Status json
+	 */
 	@POST
 	@Path("/denyFriendService")
 	public String denyFriendRequset(@FormParam("uemail") String uemail,
@@ -136,7 +168,18 @@ public class UserServices {
 
 	}
 	
-
+	/**
+	 * send friend request Rest service, this service will be called to send 
+	 * a request to a user of the system by providing his email.
+	 * This function will store a friend request by storing two email in data store
+	 * 
+	 * @param uemail
+	 *            provided current user email
+	 * @param femail
+	 *            provided the friend email that a request will be sent to
+	 *            
+	 * @return Status json
+	 */	
 	
 	@POST
 	@Path("/sendFriendRequest")
@@ -152,6 +195,18 @@ public class UserServices {
 		return object.toString();
 
 	}
+	/**
+	 * show friend requests Rest service, this service will be called to show
+	 * friend requests sent to the current user of the system by providing his email.
+	 * This function will show the friend requests by searching by his
+	 *  email in data store.
+	 * 
+	 * @param uemail
+	 *            provided current user email
+	 *            
+	 *            
+	 * @return Status JSONArray
+	 */
 	
 	@POST
 	@Path("/showFriendRequests")
@@ -163,11 +218,5 @@ public class UserServices {
 	}
 	
 	
-	@POST
-	@Path("/signOut")
-	public Boolean signOutService(){
-		return User.SignOut();
-		
-	}
 
 }

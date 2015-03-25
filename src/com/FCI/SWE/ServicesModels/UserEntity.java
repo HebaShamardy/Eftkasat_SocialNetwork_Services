@@ -29,7 +29,12 @@ import java.util.Scanner;
  * This class will act as a model for user, it will holds user data
  * </p>
  *
- * @author Mohamed Samir
+ * @author Noha Magdy
+ * @author Heba Shamardy
+ * @author Noha Hegazy
+ * @author Neama Foaud
+ * @author Nehal Khaled
+ * 
  * @version 1.0
  * @since 2014-02-12
  */
@@ -81,11 +86,11 @@ public class UserEntity {
 	
 	/**
 	 * 
-	 * This static method will form UserEntity class using user name and
+	 * This static method will form UserEntity class using user email and
 	 * password This method will serach for user in datastore
 	 * 
-	 * @param name
-	 *            user name
+	 * @param email
+	 *            user email
 	 * @param pass
 	 *            user password
 	 * @return Constructed user entity
@@ -111,6 +116,18 @@ public class UserEntity {
 		return null;
 	}
 	
+
+	/**
+	 * 
+	 * This static method will form JSONArray using user email
+	 * This method will search for friend requests sent to a user
+	 * using the user email in data store
+	 * 
+	 * @param email
+	 *            current user email
+	 *            
+	 * @return  JSONArray
+	 */
 	
 	public static JSONArray getFriendRequests(String email) {
 		DatastoreService datastore = DatastoreServiceFactory
@@ -134,6 +151,21 @@ public class UserEntity {
 	
 
 
+	/**
+	 * 
+	 * This static method will save a friend request sent from
+	 * current user to another user using their email in the data store
+	 * 
+	 * 
+	 * @param uemail
+	 *            current user email
+	 *            
+	 * @param femail
+	 * 				the friend email
+	 *            
+	 * @return  true if the request is saved
+	 */
+	
 	
 	public static Boolean saveFriendRequest(String uemail ,String femail) {
 		DatastoreService datastore = DatastoreServiceFactory
@@ -161,6 +193,24 @@ public class UserEntity {
 
 }
 	
+
+	/**
+	 * 
+	 * This static method will save a friend who is accepted by current user
+	 * so they become friends.
+	 * It saves the status of friendship using both the email of the user and
+	 * his friend's email
+	 * 
+	 * 
+	 * @param uemail
+	 *            current user email
+	 *            
+	 * @param femail
+	 * 				the friend email
+	 *            
+	 * @return  true if the accepted friend stored
+	 */
+	
 	public static Boolean saveFriend(String uemail ,String femail) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -185,9 +235,20 @@ public class UserEntity {
 		return false;
 } 
 	/**
-	 * This method will be used to save user object in datastore
 	 * 
-	 * @return boolean if user is saved correctly or not
+	 * This static method will delete a friend request who is denied by current user
+	 * 
+	 * It deletes the status of denying the request using both the email 
+	 * of the user and his friend's email
+	 * 
+	 * 
+	 * @param uemail
+	 *            current user email
+	 *            
+	 * @param femail
+	 * 				the friend email
+	 *            
+	 * @return  true if the request is deleted
 	 */
 	public static Boolean deleteRequest(String uemail ,String femail) {
 		DatastoreService datastore = DatastoreServiceFactory
@@ -213,6 +274,16 @@ public class UserEntity {
 		return false;
 } 
 
+
+	/**
+	 * 
+	 * This static method will save a new user to the data store
+	 * by providing his name, email and a password
+	 * 
+	 * 
+	 * 
+	 * @return true if saves
+	 */
 public Boolean saveUser() {
 	DatastoreService datastore = DatastoreServiceFactory
 			.getDatastoreService();
