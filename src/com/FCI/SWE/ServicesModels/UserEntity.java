@@ -9,7 +9,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.FCI.SWE.Models.User;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -29,12 +28,7 @@ import java.util.Scanner;
  * This class will act as a model for user, it will holds user data
  * </p>
  *
- * @author Noha Magdy
- * @author Heba Shamardy
- * @author Noha Hegazy
- * @author Neama Foaud
- * @author Nehal Khaled
- * 
+ * @author Mohamed Samir
  * @version 1.0
  * @since 2014-02-12
  */
@@ -59,10 +53,7 @@ public class UserEntity {
 		this.email = email;
 		this.password = password;
 	}
-	public UserEntity()
-	{
-		
-	}
+	
 	private void setId(long id){
 		this.id = id;
 	}
@@ -86,11 +77,11 @@ public class UserEntity {
 	
 	/**
 	 * 
-	 * This static method will form UserEntity class using user email and
+	 * This static method will form UserEntity class using user name and
 	 * password This method will serach for user in datastore
 	 * 
-	 * @param email
-	 *            user email
+	 * @param name
+	 *            user name
 	 * @param pass
 	 *            user password
 	 * @return Constructed user entity
@@ -116,18 +107,6 @@ public class UserEntity {
 		return null;
 	}
 	
-
-	/**
-	 * 
-	 * This static method will form JSONArray using user email
-	 * This method will search for friend requests sent to a user
-	 * using the user email in data store
-	 * 
-	 * @param email
-	 *            current user email
-	 *            
-	 * @return  JSONArray
-	 */
 	
 	public static JSONArray getFriendRequests(String email) {
 		DatastoreService datastore = DatastoreServiceFactory
@@ -149,67 +128,48 @@ public class UserEntity {
 		return requests;
 	}
 	
-
-
-	/**
-	 * 
-	 * This static method will save a friend request sent from
-	 * current user to another user using their email in the data store
-	 * 
-	 * 
-	 * @param uemail
-	 *            current user email
-	 *            
-	 * @param femail
-	 * 				the friend email
-	 *            
-	 * @return  true if the request is saved
-	 */
-	
-	
-	public static Boolean saveFriendRequest(String uemail ,String femail) {
+	public static JSONObject saveFriendRequest(String uemail ,String femail) {
+		JSONObject object=new JSONObject();
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
-		Query gaeQuery = new Query("Friends");
+		Query gaeQuery = new Query("users");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
-		
-		
-		try {
-		Entity employee = new Entity("Friends", list.size() + 2);
+		for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("email").toString().equals(femail)) {
+				Query gaeQuery2 = new Query("Friends");
+				PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+				List<Entity> list2 = pq2.asList(FetchOptions.Builder.withDefaults());
+				for (Entity entity1 : pq2.asIterable()) {
+					if (entity1.getProperty("email").toString().equals(uemail)&&
+							entity1.getProperty("friend email").toString().equals(femail)) {
+							object.put("Status","Request was allready sent");
+						return object;
+					}
+				}
+				try {
+				Entity employee = new Entity("Friends", list2.size() + 2);
 
-		employee.setProperty("email", uemail);
-		employee.setProperty("friend email", femail);
-		employee.setProperty("status","Pending");
-		datastore.put(employee);
-		txn.commit();
-		}finally{
-			if (txn.isActive()) {
-		        txn.rollback();
-		    }
+				employee.setProperty("email", uemail);
+				employee.setProperty("friend email", femail);
+				employee.setProperty("status","Pending");
+				datastore.put(employee);
+				txn.commit();
+				}finally{
+					if (txn.isActive()) {
+				        txn.rollback();
+				    }
+				}
+				object.put("Status","Request is sent");
+				return object;
+			}else{
+				object.put("Status","Friend Email not found");
+				return object;
+			}
 		}
-		return true;
-
+		return object;
 }
-	
-
-	/**
-	 * 
-	 * This static method will save a friend who is accepted by current user
-	 * so they become friends.
-	 * It saves the status of friendship using both the email of the user and
-	 * his friend's email
-	 * 
-	 * 
-	 * @param uemail
-	 *            current user email
-	 *            
-	 * @param femail
-	 * 				the friend email
-	 *            
-	 * @return  true if the accepted friend stored
-	 */
 	
 	public static Boolean saveFriend(String uemail ,String femail) {
 		DatastoreService datastore = DatastoreServiceFactory
@@ -234,22 +194,6 @@ public class UserEntity {
 		
 		return false;
 } 
-	/**
-	 * 
-	 * This static method will delete a friend request who is denied by current user
-	 * 
-	 * It deletes the status of denying the request using both the email 
-	 * of the user and his friend's email
-	 * 
-	 * 
-	 * @param uemail
-	 *            current user email
-	 *            
-	 * @param femail
-	 * 				the friend email
-	 *            
-	 * @return  true if the request is deleted
-	 */
 	public static Boolean deleteRequest(String uemail ,String femail) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -273,16 +217,10 @@ public class UserEntity {
 		
 		return false;
 } 
-
-
 	/**
+	 * This method will be used to save user object in datastore
 	 * 
-	 * This static method will save a new user to the data store
-	 * by providing his name, email and a password
-	 * 
-	 * 
-	 * 
-	 * @return true if saves
+	 * @return boolean if user is saved correctly or not
 	 */
 public Boolean saveUser() {
 	DatastoreService datastore = DatastoreServiceFactory
