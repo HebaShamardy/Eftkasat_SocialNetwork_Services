@@ -14,39 +14,39 @@ public class GroupEntity {
 	private String description;
 	private String privacy;
 	private long ownerId;
-	
-	public String getName(){
+
+	public String getName() {
 		return name;
 	}
-	
-	public String getDesc(){
+
+	public String getDesc() {
 		return description;
 	}
-	
-	public String getPrivacy(){
+
+	public String getPrivacy() {
 		return privacy;
 	}
-	
-	public long getOwnerId(){
+
+	public long getOwnerId() {
 		return ownerId;
 	}
-	
-	public void setName(String name){
+
+	public void setName(String name) {
 		this.name = name;
 	}
-	
-	public void setDescription(String desc){
+
+	public void setDescription(String desc) {
 		this.description = desc;
 	}
-	
-	public void setPrivacy(String privacy){
+
+	public void setPrivacy(String privacy) {
 		this.privacy = privacy;
 	}
-	
-	public void setOwnerId(long id){
+
+	public void setOwnerId(long id) {
 		this.ownerId = id;
 	}
-	
+
 	public Boolean saveGroup() {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -59,15 +59,13 @@ public class GroupEntity {
 		group.setProperty("name", this.name);
 		group.setProperty("description", this.description);
 		group.setProperty("privacy", this.privacy);
-		group.setProperty("owner_id",this.ownerId);
-		
-		if(datastore.put(group).isComplete())
+		group.setProperty("owner_id", this.ownerId);
+
+		if (datastore.put(group).isComplete())
 			return true;
-		else return false;
+		else
+			return false;
 
 	}
-
-
-
 
 }
