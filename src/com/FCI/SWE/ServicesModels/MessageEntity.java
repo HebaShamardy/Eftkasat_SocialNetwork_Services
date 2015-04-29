@@ -2,7 +2,6 @@ package com.FCI.SWE.ServicesModels;
 
 import java.util.List;
 
-import org.datanucleus.store.types.sco.backed.ArrayList;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

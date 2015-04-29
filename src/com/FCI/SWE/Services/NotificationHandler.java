@@ -5,9 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.FCI.SWE.Models.MessageNotification;
-import com.FCI.SWE.Models.RequestNotification;
-import com.FCI.SWE.Models.Notification;
+import com.FCI.SWE.Models.Notification.*;
 import com.FCI.SWE.ServicesModels.NotificationEntity;
 
 
