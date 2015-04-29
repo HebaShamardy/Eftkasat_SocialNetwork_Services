@@ -67,7 +67,7 @@ public class PostEntity {
 		}
 
 		for (Entity entity : pq.asIterable()) {
-			postId = (long) entity.getProperty("ID/Name");
+			postId = entity.getKey().getId();
 
 		}
 
@@ -166,7 +166,8 @@ public class PostEntity {
 		String[] arr;
 
 		for (Entity entity : pq.asIterable()) {
-			if (entity.getProperty("ID/Name").toString().equals(postId)) {
+			long id =entity.getKey().getId();
+			if (id == postId) {
 				arr = entity.getProperty("PeopleWhoLike").toString()
 						.split(delim);
 

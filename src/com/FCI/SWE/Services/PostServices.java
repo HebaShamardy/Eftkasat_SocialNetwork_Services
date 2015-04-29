@@ -94,7 +94,7 @@ public class PostServices {
 
 	@POST
 	@Path("/SharePostService")
-	public String SharePostService(@FormParam("ID/Name") long PostId,
+	public String SharePostService(@FormParam("ID") long PostId,
 			@FormParam("timelineType") String timelineType,
 			@FormParam("timeline") String timeline,
 			@FormParam("ActiveUserID") long activeUserId,

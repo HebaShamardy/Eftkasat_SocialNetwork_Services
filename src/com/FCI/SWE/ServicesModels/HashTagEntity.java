@@ -175,7 +175,8 @@ public class HashTagEntity {
 		PreparedQuery pq1 = datastore.prepare(gaeQuery1);
 		for (Entity entity : pq1.asIterable()) {
 			for (int i = 0; i < posts.length; i++) {
-				if (entity.getProperty("ID/Name").toString().equals(posts[i])) {
+				long id = entity.getKey().getId();
+				if (id == Long.parseLong(posts[i])) {
 					long userId = (long) entity.getProperty("ActiveUserId");
 					UserEntity user = UserEntity.getUserData(userId);
 					JSONObject object = new JSONObject();
