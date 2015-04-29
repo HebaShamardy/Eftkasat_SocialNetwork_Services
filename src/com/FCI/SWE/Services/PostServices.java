@@ -37,7 +37,7 @@ public class PostServices {
 			@FormParam("timeline") String timeline,
 			@FormParam("Feeling") String feeling,
 			@FormParam("privacyType") String privacyType,
-			@FormParam("audience") ArrayList<String> audience) {
+			@FormParam("audience") String audience) {
 		
 		
 		
@@ -84,7 +84,7 @@ public class PostServices {
 	
 	@POST
 	@Path("/LikePostService")
-	public String LikePostService(@FormParam("ID/Name") long postId,
+	public String LikePostService(@FormParam("ID") long postId,
 			@FormParam("ActiveUser") String ActiveUser) {
 		String status = PostEntity.LikePost(postId, ActiveUser);
 		JSONObject object = new JSONObject();
@@ -99,7 +99,7 @@ public class PostServices {
 			@FormParam("timeline") String timeline,
 			@FormParam("ActiveUserID") long activeUserId,
 			@FormParam("privacyType") String privacyType,
-			@FormParam("audience") ArrayList<String> audience) {
+			@FormParam("audience") String audience) {
 		
 		JSONObject object = new JSONObject();
 		object = PostEntity.GetcontentPost(PostId);

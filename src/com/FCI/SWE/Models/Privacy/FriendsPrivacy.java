@@ -17,7 +17,7 @@ public class FriendsPrivacy extends Privacy {
 	}
 
 	@Override
-	public ArrayList<Integer> getAudience(ArrayList<String> audience, ArrayList<Integer> audienceId, long activeUserId){
+	public ArrayList<Integer> getAudience(String audience, ArrayList<Integer> audienceId, long activeUserId){
 		JSONArray array=new JSONArray();
 		array = UserEntity.getFriends(activeUserId);
 		for(int i=0;i<array.size();i++){

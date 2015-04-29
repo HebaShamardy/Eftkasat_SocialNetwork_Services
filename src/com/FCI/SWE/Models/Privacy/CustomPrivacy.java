@@ -14,11 +14,13 @@ public class CustomPrivacy extends Privacy {
 	}
 	
 	@Override
-	public ArrayList<Integer> getAudience(ArrayList<String> audience, 
+	public ArrayList<Integer> getAudience(String audience, 
 			ArrayList<Integer> audienceId, long activeUserId){
+		String delim = "/";
+		String[] audienceName = audience.split(delim);
 		
-		for(int i=0;i<audience.size();i++){
-			String name = audience.get(i);
+		for(int i=0;i<audienceName.length;i++){
+			String name = audienceName[i];
 			UserEntity user = new UserEntity();
 			user = UserEntity.getUserUpdate(name);
 			audienceId.add((int) user.getId());

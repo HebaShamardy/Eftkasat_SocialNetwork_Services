@@ -1,5 +1,6 @@
 package com.FCI.SWE.Services;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -22,7 +23,8 @@ public class NotificationHandler
 	
 	@POST
 	@Path("/NotificationHandlerService")
-	public String newNotificationHandler(String type, String uemail)
+	public String newNotificationHandler(@FormParam("type")String type
+			, @FormParam("uemail")String uemail)
 	{
 		NotificationEntity notificationEntity= new NotificationEntity();
 		if(type.equals("getRequestNotification")){
@@ -30,6 +32,9 @@ public class NotificationHandler
 		}
 		if(type.equals("getMessageNotification")){
 			this.setNotification(new MessageNotification());
+		}
+		if(type.equals("getMessageNotification")){
+			this.setNotification(new LikePostNotification());
 		}
 		else{
 			return "NotValidType";

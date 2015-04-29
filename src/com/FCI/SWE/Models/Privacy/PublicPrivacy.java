@@ -17,7 +17,7 @@ public class PublicPrivacy extends Privacy {
 	}
 	
 	@Override
-	public ArrayList<Integer> getAudience(ArrayList<String> audience, ArrayList<Integer> audienceId, long activeUserId){
+	public ArrayList<Integer> getAudience(String audience, ArrayList<Integer> audienceId, long activeUserId){
 		audienceId = UserEntity.getAllUsersIds();
 		return audienceId;
 
