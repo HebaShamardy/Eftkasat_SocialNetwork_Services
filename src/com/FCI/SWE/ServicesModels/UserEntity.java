@@ -159,7 +159,7 @@ public class UserEntity {
 			}
 		}
 		JSONArray friends = new JSONArray();
-		gaeQuery = new Query("users");
+		gaeQuery = new Query("User");
 		pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			for(int i=0;i<friendsEmails.size();i++){
@@ -303,12 +303,13 @@ public class UserEntity {
 
 			datastore.put(employee);
 			txn.commit();
+			return true;
 		} finally {
 			if (txn.isActive()) {
 				txn.rollback();
 			}
 		}
-		return true;
+		
 
 	}
 
@@ -316,7 +317,7 @@ public class UserEntity {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
-		Query gaeQuery = new Query("users");
+		Query gaeQuery = new Query("User");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			if (entity.getProperty("name").toString().equals(username)) {
@@ -335,7 +336,7 @@ public class UserEntity {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 
-		Query gaeQuery = new Query("users");
+		Query gaeQuery = new Query("User");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			if (entity.getKey().getId() == userid) {
@@ -354,7 +355,7 @@ public class UserEntity {
 		ArrayList<Integer> Ids = new ArrayList<Integer>();
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-		Query gaeQuery = new Query("users");
+		Query gaeQuery = new Query("User");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			int id = (int) entity.getKey().getId();
