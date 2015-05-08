@@ -31,7 +31,7 @@ public class HashTagEntity {
 
 			employee.setProperty("HashTagContent", Hashname);
 			employee.setProperty("Post_ID", postid + "/");
-			employee.setProperty("Counter", 0);
+			employee.setProperty("Counter", 1);
 
 			datastore.put(employee);
 			txn.commit();
@@ -101,7 +101,7 @@ public class HashTagEntity {
 			}
 
 		}
-		if (!result.equals("Posted")) {
+		if (!result.equals("Saved")) {
 
 			result = HashTagDB(ContentHashtag, Postid);
 		}
@@ -109,8 +109,11 @@ public class HashTagEntity {
 			txn.rollback();
 		}
 
+		txn = datastore.beginTransaction();
+		gaeQuery = new Query("HashTag");
+		pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
-			if (!entity.getProperty("Counter").equals(0)) {
+			if ((long)entity.getProperty("Counter")!=0) {
 				JSONObject object = new JSONObject();
 				object.put("hashragName", entity.getProperty("HashTagContent")
 						.toString());
@@ -158,6 +161,7 @@ public class HashTagEntity {
 		String delim = "/";
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("HashTag");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
@@ -170,11 +174,12 @@ public class HashTagEntity {
 
 		}
 		JSONArray array = new JSONArray();
-
-		Query gaeQuery1 = new Query("Post");
-		PreparedQuery pq1 = datastore.prepare(gaeQuery1);
-		for (Entity entity : pq1.asIterable()) {
+		txn = datastore.beginTransaction();
+		 gaeQuery = new Query("Post");
+		 pq = datastore.prepare(gaeQuery);
 			for (int i = 0; i < posts.length; i++) {
+		for (Entity entity : pq.asIterable()) {
+	
 				long id = entity.getKey().getId();
 				if (id == Long.parseLong(posts[i])) {
 					long userId = (long) entity.getProperty("ActiveUserId");
@@ -192,7 +197,7 @@ public class HashTagEntity {
 					object.put("timeline", entity.getProperty("TimelineName"));
 					object.put("people", entity.getProperty("PeopleWhoLike"));
 					array.add(object);
-
+					break;
 				}
 
 			}
@@ -205,7 +210,7 @@ public class HashTagEntity {
 	public static String getTrends() {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-
+		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("HashTagTrends");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		JSONArray array=new JSONArray();

@@ -173,9 +173,7 @@ public class UserServices {
 
 		JSONObject object = UserEntity.saveFriendRequest(uemail, femail);
 
-		object.put("Status", "OK");
-		object.put("email", uemail);
-		object.put("friend email", femail);
+		
 
 		return object.toString();
 

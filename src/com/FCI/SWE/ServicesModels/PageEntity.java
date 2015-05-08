@@ -25,14 +25,14 @@ public class PageEntity {
 		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("Page");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
-
+		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
 		for (Entity entity : pq.asIterable()) {
 			if (entity.getProperty("name").equals(name))
 				return "Found";
 		}
 		try {
 			datastore.prepare(gaeQuery);
-			Entity employee = new Entity("Page");
+			Entity employee = new Entity("Page" , list.size()+1);
 			employee.setProperty("name", name);
 			employee.setProperty("type", type);
 			employee.setProperty("category", category);
@@ -100,28 +100,29 @@ public class PageEntity {
 		return postId;
 	}
 
-	public static String likePage(int pageID, String uname) {
-		int likesNumber = 0, ID = 0;
+	public static String likePage(long pageID, String uname) {
+		long likesNumber = 0, ID = 0;
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("userPageLikes");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
-			Key k = entity.getKey();
-			ID = (int) k.getId();
+			ID = (long) entity.getProperty("pageId");
+		
 			if (entity.getProperty("username").equals(uname) && ID == pageID)
 				return "AlreadyLiked";
 		}
-
+		ID=0;
+		txn = datastore.beginTransaction();
 		gaeQuery = new Query("Page");
 		pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			Key k = entity.getKey();
-			ID = (int) k.getId();
+			ID = (long) k.getId();
 
 			if (ID == pageID) {
-				likesNumber = (int) entity.getProperty("numberOfLikes");
+				likesNumber = (long) entity.getProperty("numberOfLikes");
 				likesNumber++;
 				entity.setProperty("numberOfLikes", likesNumber);
 				datastore.put(entity);
@@ -131,17 +132,22 @@ public class PageEntity {
 		if (txn.isActive()) {
 			txn.rollback();
 		}
-		Query gaeQuery1 = new Query("userPageLikes");
-		PreparedQuery pq1 = datastore.prepare(gaeQuery1);
-		Entity employee = new Entity("userPageLikes");
+		txn = datastore.beginTransaction();
+		gaeQuery = new Query("userPageLikes");
+		pq = datastore.prepare(gaeQuery);
+		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+		Entity employee = new Entity("userPageLikes", list.size() + 2);
 		employee.setProperty("pageId", pageID);
 		employee.setProperty("username", uname);
 		datastore.put(employee);
 		txn.commit();
+		if (txn.isActive()) {
+			txn.rollback();
+		}
 		return "Liked";
 	}
 
-	public static String unlikePage(int pageID, String uname) {
+	public static String unlikePage(long pageID, String uname) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		Transaction txn = datastore.beginTransaction();
@@ -149,39 +155,35 @@ public class PageEntity {
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 
 		for (Entity entity : pq.asIterable()) {
-			if (entity.getProperty("pageId").toString().equals(pageID)
+			if ((long)entity.getProperty("pageId")==pageID
 					&& entity.getProperty("username").toString().equals(uname)) {
 				Key k = entity.getKey();
 				datastore.delete(k);
 				txn.commit();
-				return "Unliked";
 			}
-			if (txn.isActive()) {
-				txn.rollback();
-			}
+			
 		}
-		int ID = -1, likesNumber = 0;
+		long ID = -1, likesNumber = 0;
+		txn = datastore.beginTransaction();
 		gaeQuery = new Query("Page");
 		pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			Key k = entity.getKey();
-			ID = (int) k.getId();
+			ID = (long) k.getId();
 
 			if (ID == pageID) {
-				likesNumber = (int) entity.getProperty("numberOfLikes");
+				likesNumber = (long) entity.getProperty("numberOfLikes");
 				likesNumber--;
 				entity.setProperty("numberOfLikes", likesNumber);
 				datastore.put(entity);
 				txn.commit();
 			}
 		}
-		if (txn.isActive()) {
-			txn.rollback();
-		}
-		return "Failed to found";
+		
+		return "Unliked";
 	}
 
-	public static JSONArray getPageActiveUsers(int pageID) {
+	public static JSONArray getPageActiveUsers(long pageID) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
 		JSONArray likedUsers = new JSONArray();
@@ -189,7 +191,7 @@ public class PageEntity {
 		Query gaeQuery = new Query("userPageLikes");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
-			if (entity.getProperty("pageId").toString().equals(pageID)) {
+			if ((long)entity.getProperty("pageId")==pageID) {
 				JSONObject object = new JSONObject();
 				String uname = entity.getProperty("username").toString();
 				object.put("username", uname);
@@ -200,28 +202,28 @@ public class PageEntity {
 	}
 
 	public static JSONArray showUnlikedPgaes(String uname) {
-		ArrayList<Integer> pagesIDs = new ArrayList<Integer>();
-		ArrayList<Integer> unlikedPagesIDs = new ArrayList<Integer>();
+		ArrayList<Long> pagesIDs = new ArrayList<Long>();
+		ArrayList<Long> unlikedPagesIDs = new ArrayList<Long>();
 		JSONArray unlikedPagesNames = new JSONArray();
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-
+		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("Page");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 
 		for (Entity entity : pq.asIterable()) {
+			if(!entity.getProperty("adminName").equals(uname)){
 			Key k = entity.getKey();
-			pagesIDs.add((int) k.getId());
+			pagesIDs.add((long) k.getId());
+			}
 		}
-		datastore = DatastoreServiceFactory.getDatastoreService();
-		// Transaction txn = datastore.beginTransaction();
+		txn = datastore.beginTransaction();
 		gaeQuery = new Query("userPageLikes");
 		pq = datastore.prepare(gaeQuery);
 
 		for (int i = 0; i < pagesIDs.size(); i++) {
 			for (Entity entity : pq.asIterable()) {
-				if ((entity.getProperty("pageId").toString().equals(pagesIDs
-						.get(i)))
+				if ((long)entity.getProperty("pageId")==pagesIDs.get(i)
 						&& entity.getProperty("username").toString()
 								.equals(uname))
 					continue;
@@ -229,15 +231,18 @@ public class PageEntity {
 					unlikedPagesIDs.add(pagesIDs.get(i));
 			}
 		}
+		txn = datastore.beginTransaction();
 		gaeQuery = new Query("Page");
 		pq = datastore.prepare(gaeQuery);
 
 		for (int i = 0; i < unlikedPagesIDs.size(); i++) {
 			for (Entity entity : pq.asIterable()) {
-				if (entity.getProperty("pageId").toString()
-						.equals(unlikedPagesIDs.get(i))) {
+				Key k = entity.getKey();
+				long ID = (long) k.getId();
+				if (ID == unlikedPagesIDs.get(i)) {
 					JSONObject object = new JSONObject();
 					String pageName = entity.getProperty("name").toString();
+					object.put("pageId", unlikedPagesIDs.get(i));
 					object.put("name", pageName);
 					unlikedPagesNames.add(object);
 					break;
@@ -253,13 +258,13 @@ public class PageEntity {
 		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("Post");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
-		String numberOfSeen = "";
+		int numberOfSeen = 0;
 		for (Entity entity : pq.asIterable()) {
 			Key k = entity.getKey();
 			int id = (int) k.getId();
 			if (id == postID)
-				numberOfSeen = entity.getProperty("NumberOfSeen").toString();
+				numberOfSeen = (int)entity.getProperty("NumberOfSeen");
 		}
-		return numberOfSeen;
+		return Integer.toString(numberOfSeen);
 	}
 }

@@ -9,9 +9,9 @@ public class FriendTimelinePost implements Post {
 
 	@Override
 	public long excute(String content, long activeUserId, long timelineId,
-			String timelineUser, String feeling) {
+			String timelineUser, String feeling,String privacyType, String audience) {
 		long postId = PostEntity.savePost(content, activeUserId, "friend",
-				timelineUser, feeling);
+				timelineUser, feeling,privacyType, audience);
 		
 		return postId;
 	}

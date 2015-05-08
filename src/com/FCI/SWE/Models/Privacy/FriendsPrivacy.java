@@ -24,6 +24,7 @@ public class FriendsPrivacy extends Privacy {
 			JSONObject object = new JSONObject();
 			object = (JSONObject) array.get(i);
 			int id = (int) object.get("id");
+			System.out.print(id);
 			audienceId.add(id);
 		}
 		return audienceId;

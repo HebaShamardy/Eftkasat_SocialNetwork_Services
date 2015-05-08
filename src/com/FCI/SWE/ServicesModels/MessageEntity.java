@@ -44,6 +44,7 @@ public class MessageEntity {
 				txn.rollback();
 			}
 		}
+		txn = datastore.beginTransaction();
 		gaeQuery = new Query("Message");
 		pq = datastore.prepare(gaeQuery);
 		list = pq.asList(FetchOptions.Builder.withDefaults());
@@ -81,11 +82,9 @@ public class MessageEntity {
 
 			txn.commit();
 		} finally {
-			if (txn.isActive()) {
-				txn.rollback();
-			}
+			
 		}
-
+		txn = datastore.beginTransaction();
 		gaeQuery = new Query("Conversation");
 		pq = datastore.prepare(gaeQuery);
 		list = pq.asList(FetchOptions.Builder.withDefaults());
@@ -117,6 +116,7 @@ public class MessageEntity {
 
 		try {
 			for (int i = 0; i < users.size(); i++) {
+				txn = datastore.beginTransaction();
 				gaeQuery = new Query("userInConversation");
 				pq = datastore.prepare(gaeQuery);
 				list = pq.asList(FetchOptions.Builder.withDefaults());
@@ -166,7 +166,7 @@ public class MessageEntity {
 	public static long getConversationId(String title) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-
+		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("Conversation");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {

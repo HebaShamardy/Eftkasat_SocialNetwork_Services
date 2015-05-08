@@ -190,8 +190,11 @@ public class UserEntity {
 		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
 		for (Entity entity : pq.asIterable()) {
 			if (entity.getProperty("email").toString().equals(femail)) {
+				DatastoreService datastore2 = DatastoreServiceFactory
+						.getDatastoreService();
+				Transaction txn2 = datastore2.beginTransaction();
 				Query gaeQuery2 = new Query("Friends");
-				PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+				PreparedQuery pq2 = datastore2.prepare(gaeQuery2);
 				List<Entity> list2 = pq2.asList(FetchOptions.Builder
 						.withDefaults());
 				for (Entity entity1 : pq2.asIterable()) {
@@ -202,26 +205,39 @@ public class UserEntity {
 						return object;
 					}
 				}
+
+				DatastoreService datastore3 = DatastoreServiceFactory
+						.getDatastoreService();
+				Transaction txn3 = datastore2.beginTransaction();
+				Query gaeQuery3 = new Query("Friends");
+				PreparedQuery pq3 = datastore3.prepare(gaeQuery3);
+				List<Entity> list3 = pq3.asList(FetchOptions.Builder
+						.withDefaults());
 				try {
-					Entity employee = new Entity("Friends", list2.size() + 2);
+
+					Entity employee = new Entity("Friends", list3.size() + 2);
 
 					employee.setProperty("email", uemail);
 					employee.setProperty("friendEmail", femail);
 					employee.setProperty("status", "Pending");
-					datastore.put(employee);
-					txn.commit();
+					datastore3.put(employee);
+					txn3.commit();
 				} finally {
-					if (txn.isActive()) {
-						txn.rollback();
+					if (txn3.isActive()) {
+						txn3.rollback();
 					}
 				}
 				object.put("Status", "Request is sent");
 				return object;
-			} else {
-				object.put("Status", "Friend Email not found");
-				return object;
-			}
+			} 
+				
+			
 		}
+		if (txn.isActive()) {
+			txn.rollback();
+		}
+		object.put("Status", "Friend Email not found");
+		
 		return object;
 	}
 
@@ -238,7 +254,7 @@ public class UserEntity {
 				entity.setProperty("status", "Accepted");
 				datastore.put(entity);
 				txn.commit();
-				return true;
+				
 			}
 			if (txn.isActive()) {
 				txn.rollback();
@@ -246,7 +262,7 @@ public class UserEntity {
 
 		}
 
-		return false;
+		return true;
 	}
 
 	public static Boolean deleteRequest(String uemail, String femail) {

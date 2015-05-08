@@ -7,7 +7,7 @@ public class PagePost implements Post {
 
 	@Override
 	public long excute(String content, long adminId, long pageId,
-			String pageName, String feeling) {
+			String pageName, String feeling ,String privacyType, String audience) {
 		long postId = PageEntity.addPost(pageId, pageName, "page", content,
 				adminId, feeling);
 		return postId;

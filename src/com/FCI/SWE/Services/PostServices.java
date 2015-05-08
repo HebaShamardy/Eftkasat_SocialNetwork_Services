@@ -25,7 +25,8 @@ import com.FCI.SWE.ServicesModels.UserEntity;
 
 @Path("/post")
 @Produces(MediaType.TEXT_PLAIN)
-public class PostServices {
+public class PostServices 
+{
 	Post post;
 
 	@POST
@@ -37,7 +38,8 @@ public class PostServices {
 			@FormParam("timeline") String timeline,
 			@FormParam("Feeling") String feeling,
 			@FormParam("privacyType") String privacyType,
-			@FormParam("audience") String audience) {
+			@FormParam("audience") String audience) 
+	{
 		
 		
 		
@@ -46,17 +48,17 @@ public class PostServices {
 		if (timelineType.equals("friendTimeline")) {
 			post = new FriendTimelinePost();
 			postId = post.excute(content, activeUserId, timelineId, timeline,
-					feeling);
+					feeling,privacyType,audience);
 
 		} else if (timelineType.equals("userTimeline")) {
 			post = new UserTimelinePost();
 			postId = post.excute(content, activeUserId, timelineId, timeline,
-					feeling);
+					feeling,privacyType,audience);
 
 		} else if (timelineType.equals("pageTimeline")) {
 			post = new PagePost();
 			postId = post.excute(content, activeUserId, timelineId, timeline,
-					feeling);
+					feeling,privacyType,audience);
 
 		}
 		ArrayList<Integer> audienceId = new ArrayList<Integer>();
@@ -110,12 +112,12 @@ public class PostServices {
 		if (timelineType.equals("friendTimeline")) {
 			post = new FriendTimelinePost();
 			postId = post.excute(content, activeUserId, 0, timeline,
-					feeling);
+					feeling,privacyType,audience);
 
 		} else if (timelineType.equals("userTimeline")) {
 			post = new UserTimelinePost();
 			postId = post.excute(content, activeUserId, 0, timeline,
-					feeling);
+					feeling,privacyType,audience);
 
 		}
 		

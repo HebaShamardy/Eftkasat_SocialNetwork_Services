@@ -35,7 +35,7 @@ public class PostEntity {
 	}
 
 	public static long savePost(String Content, long ActiveUserId, String type,
-			String timelineUser, String feeling) {
+			String timelineUser, String feeling , String privacyType, String audience) {
 		long postId = -1;
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
@@ -60,12 +60,12 @@ public class PostEntity {
 			txn.commit();
 
 		} finally {
-			if (txn.isActive()) {
-				txn.rollback();
-			}
+			
 
 		}
-
+		txn = datastore.beginTransaction();
+		gaeQuery = new Query("Post");
+		pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			postId = entity.getKey().getId();
 
@@ -131,7 +131,7 @@ public class PostEntity {
 
 
 		try {
-			Entity employee = new Entity("User", list.size() + 2);
+			Entity employee = new Entity("PostAudience", list.size() + 2);
 
 			employee.setProperty("postId", PostId);
 			JSONArray array = new JSONArray();
@@ -179,16 +179,14 @@ public class PostEntity {
 
 						String allUsersLikedPost = entity.getProperty(
 								"PeopleWhoLike").toString()
-								+ "/" + ActiveUser;
+								 + ActiveUser+"/";
 						entity.setProperty("PeopleWhoLike", allUsersLikedPost);
 						datastore.put(entity);
 						txn.commit();
-						DatastoreService datastore2 = DatastoreServiceFactory
-								.getDatastoreService();
-						Transaction txn2 = datastore.beginTransaction();
-						Query gaeQuery2 = new Query("postNotification");
-						PreparedQuery pq2 = datastore.prepare(gaeQuery);
-						List<Entity> list2 = pq.asList(FetchOptions.Builder.withDefaults());
+						txn = datastore.beginTransaction();
+						gaeQuery = new Query("postNotification");
+						pq = datastore.prepare(gaeQuery);
+						list = pq.asList(FetchOptions.Builder.withDefaults());
 
 						try {
 							Entity employee = new Entity("postNotification", list.size() + 2);

@@ -16,18 +16,18 @@ public class Privacy {
 		Privacy privacy=new PublicPrivacy();
 		if (type.equals("friends")) {
 			privacy = new FriendsPrivacy();
-			JSONArray array=new JSONArray();
+			/*JSONArray array=new JSONArray();
 			array = UserEntity.getFriends(activeUserId);
 			for(int i=0;i<array.size();i++){
 				JSONObject object = new JSONObject();
 				object = (JSONObject) array.get(i);
 				int id = (int) object.get("id");
 				audienceId.add(id);
-			}
+			}*/
 
 		} else if (type.equals("public")) {
 			privacy = new PublicPrivacy();
-			audienceId = UserEntity.getAllUsersIds();
+			//audienceId = UserEntity.getAllUsersIds();
 		} else if (type.equals("custom")) {
 			privacy = new CustomPrivacy();
 			

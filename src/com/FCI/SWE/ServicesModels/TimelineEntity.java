@@ -12,6 +12,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
 
 
 
@@ -21,6 +22,8 @@ public class TimelineEntity {
 		ArrayList<Integer> postIds = new ArrayList<Integer>();
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
+
+		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("PostAudience");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
@@ -78,6 +81,8 @@ public class TimelineEntity {
 		ArrayList<Integer> postIds = new ArrayList<Integer>();
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
+
+		Transaction txn = datastore.beginTransaction();
 		Query gaeQuery = new Query("pagePosts");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
@@ -90,9 +95,10 @@ public class TimelineEntity {
 		}
 		JSONArray array = new JSONArray();
 
-		Query gaeQuery1 = new Query("Post");
-		PreparedQuery pq1 = datastore.prepare(gaeQuery1);
-		for (Entity entity : pq1.asIterable()) {
+		 txn = datastore.beginTransaction();
+		 gaeQuery = new Query("Post");
+		 pq = datastore.prepare(gaeQuery);
+		for (Entity entity : pq.asIterable()) {
 			for (int i = 0; i < postIds.size(); i++) {
 				long id = entity.getKey().getId();
 				if (id==postIds.get(i)) {

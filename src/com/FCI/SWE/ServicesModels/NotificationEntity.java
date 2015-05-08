@@ -10,11 +10,13 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Transaction;
 
 public class NotificationEntity {
 	public JSONArray getFriendRequestNotification(String uemail) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
+		Transaction txn = datastore.beginTransaction();
 		JSONArray requests = new JSONArray();
 
 		Query gaeQuery = new Query("Friends");
@@ -36,8 +38,10 @@ public class NotificationEntity {
 	public JSONArray getMessageNotification(String uname) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
-		JSONArray requests = new JSONArray();
 
+		Transaction txn = datastore.beginTransaction();
+		JSONArray requests = new JSONArray();
+		
 		Query gaeQuery = new Query("notifications");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
@@ -54,6 +58,8 @@ public class NotificationEntity {
 	public JSONArray getPostNotification(String uname) {
 		DatastoreService datastore = DatastoreServiceFactory
 				.getDatastoreService();
+
+		Transaction txn = datastore.beginTransaction();
 		ArrayList<Integer> postIds = new ArrayList<>();
 
 		Query gaeQuery = new Query("postNotification");
